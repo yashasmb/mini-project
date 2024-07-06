@@ -8,6 +8,10 @@ from django.urls import path, include
 #username:sooraj
 #password:sooraj123
 
+
+
+#username: sanskar
+# password: bit@2025
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('base.urls')),

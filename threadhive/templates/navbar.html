@@ -2,9 +2,9 @@
     <h1> logo </h1>
 </a>
 
-<form action="{% url 'home' %}" method="get">
+<form method="GET" action="{% url 'home' %}" >
     <input type="text" name = "q" placeholder="search rooms..." />
-</form>
+</form> 
 
 
 {% if request.user.is_authenticated %}

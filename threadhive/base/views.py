@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-from .models import Room, Topic
+from .models import Room, Topic, Message
 from django.contrib.auth.decorators import login_required
 from .forms import RoomForm
 from django.db.models import  Q
@@ -79,18 +79,42 @@ def home(request):
     )
     topics =Topic.objects.all()
     room_count = rooms.count()
-    context = {'Rooms':rooms,'topics':topics, "room_count":room_count}
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
+    
+    
+    
+    context = {'Rooms':rooms,'topics':topics, 
+               "room_count":room_count, 'room_messages':room_messages}
     return render(request,'base/home.html' ,  context)
     
 
 # @login_required(login_url="login")
 def room(request,pk):
     room = Room.objects.get(id = pk)
+    room_messages = room.message_set.all()
+    particapants = room.participants.all()
     
+    if request.method =="POST":
+        message = Message.objects.create(
+            user = request.user,
+            room = room,
+            body= request.POST.get('body'),
+        )
+        room.participants.add(request.user)
+        return redirect('room', pk = room.id)
             
-    context ={'room':room}
+    context ={'room':room,
+              'room_messages':room_messages,
+              'particapants': particapants}
     return render(request,'base/rooms.html',context)
-    
+
+
+def userProfile(requests, pk):
+    user = User.objects.get(id=pk)
+    context={'user':user}
+    return render(requests, 'base/profile.html',context)
+
+
     
 @login_required(login_url="login")
 def createRoom(request):
@@ -135,3 +159,19 @@ def deleteRoom(request,pk):
         room.delete()
         return redirect('home')
     return render(request,'base/delete.html',context)
+        
+        
+@login_required(login_url="login")
+def deleteMessage(request,pk):
+    message = Message.objects.get(id = pk)
+    
+    
+    if request.user != message.user:
+        return HttpResponse('your are not allowed here!!')
+    
+    
+    if request.method == "POST":
+        message.delete()
+        return redirect('home')
+    return render(request,'base/delete.html',{'obj':message}) 
+        
