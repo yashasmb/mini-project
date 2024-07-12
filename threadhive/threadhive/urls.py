@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.urls import path, include
 
-#username:yashas
+#username:yashasmb
 #password:yashas123
 
 #username:sooraj
@@ -16,8 +16,14 @@ from django.urls import path, include
 
 #username: ashishankam
 #password: sobha1074
+
+# username:tommy
+# password:jerry@123
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('base.urls')),
+    path('api/', include('base.api.urls'))
     
 ]
